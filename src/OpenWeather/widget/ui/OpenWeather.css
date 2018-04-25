@@ -1,0 +1,55 @@
+.widgetname {
+    
+}
+
+.widgetname-message {
+
+}
+
+.input-group-addon {
+    clear: both;
+    padding: 2px 6px;
+}
+
+.widgetname-infoTextNode {
+    padding: 0.8em 1em;
+    margin-top: 10px;
+}
+
+.template-currentDay div.weather-container {
+  width: 150px;
+}
+
+.template-currentDay img {
+  display: block;
+  margin-left: auto;
+}
+
+.template-currentDay .weather-location {
+  font-size: 20px;
+}
+
+.template-currentDay .weather-currentDate {
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.template-currentDay .weather-summary {
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.template-currentDay .weather-icon {
+  float: left;
+  width: 50px;
+  height: 20px;
+}
+
+.template-currentDay .weather-result {
+  margin-left: 50px;
+  font-size: 35px;
+}
+
+.template-currentDay .temp-min {
+  color: #0000008c
+}

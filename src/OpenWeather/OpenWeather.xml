@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="OpenWeather.widget.OpenWeather" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>OpenWeather</name>
+    <description>Get live weather updates in your application.</description>
+
+    <icon />
+
+    <properties>
+        
+        <property key="weatherDisplayType" type="enumeration" defaultValue="singleDay">
+            <caption>Render Type</caption>
+            <category>Appearance</category>
+            <description>Choose the level of detail that will be shown to the user.</description>
+            <enumerationValues>
+                <enumerationValue key="singleDay">Today Forecast</enumerationValue>
+                <enumerationValue key="fiveDays">5 Days Forecast</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="temperatureDisplayType" type="enumeration" defaultValue="average">
+            <caption>Temperature Detail</caption>
+            <category>Appearance</category>
+            <description>Choose the level of detail that will be shown to the user.</description>
+            <enumerationValues>
+                <enumerationValue key="average">Average Temperature</enumerationValue>
+                <enumerationValue key="minMax">Min/Max Temperature</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="temperatureMeasurement" type="enumeration" defaultValue="celcius">
+            <caption>Measurement</caption>
+            <category>Appearance</category>
+            <description>Choose the temperature measurement.</description>
+            <enumerationValues>
+                <enumerationValue key="celcius">Celcius</enumerationValue>
+                <enumerationValue key="fahrenheit">Fahrenheit</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="dateFormat" type="enumeration" defaultValue="none">
+            <caption>Date Format</caption>
+            <category>Appearance</category>
+            <description>Show a date or turn it off.</description>
+            <enumerationValues>
+                <enumerationValue key="none">No date</enumerationValue>
+                <enumerationValue key="todayFriendly">Day name</enumerationValue>
+                <enumerationValue key="todayDate">Day date</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="serviceBaseURL" type="string" defaultValue="https://api.openweathermap.org/">
+            <caption>Service Base URL</caption>
+            <category>Data source</category>
+            <description>Base URL for the openweathermap.org web service.</description>
+        </property>
+
+        <property key="apiKey" type="string">
+            <caption>API Key</caption>
+            <category>Data source</category>
+            <description>Register a free account at openweathermap.org to get an API Key.</description>
+        </property>
+
+        <property key="city" type="string">
+            <caption>City Name</caption>
+            <category>Data source</category>
+            <description>The city name for the required weather forecast.</description>
+        </property>
+        <property key="country" type="string">
+            <caption>Country Code</caption>
+            <category>Data source</category>
+            <description>The ISO 3166 country code.</description>
+        </property>
+
+        <property key="mfToExecute" type="microflow" required="false" defaultValue="">
+            <caption>Microflow</caption>
+            <category>Behavior</category>
+            <description>The microflow to execute on click.</description>
+            <returnType type="Boolean" />
+        </property>
+    </properties>
+</widget>

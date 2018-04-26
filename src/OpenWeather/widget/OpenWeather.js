@@ -44,7 +44,7 @@ define([
     // START *** Private functions 
     var widgetClass;
     var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    
+
     var setWeatherImage = function (iconCode) {
         var iconUrl = "https://openweathermap.org/img/w/" + iconCode + ".png";
         $(widgetClass + ' .weather-icon').html("<img src='" + iconUrl + "'>");
@@ -59,23 +59,23 @@ define([
 
         //get the widget main class
         widgetClass = "." + this.class;
-        
+
         //If an icon is present, set the image
         if (icon) {
             setWeatherImage(icon);
         }
-        
+
         //set the date if widget configured for it.
-        if(this.dateFormat !== 'none'){
+        if (this.dateFormat !== 'none') {
             var today = new Date();
             var todayDate = this.dateFormat === 'todayFriendly' ? dayNames[today.getDay()] : today.toLocaleDateString(navigator.language)
-            $(widgetClass + ' .weather-currentDate').text(todayDate);   
+            $(widgetClass + ' .weather-currentDate').text(todayDate);
         }
-       
-        $(widgetClass + ' .weather-location').text(location+ ", "+country);
+
+        $(widgetClass + ' .weather-location').text(location + ", " + country);
         $(widgetClass + ' .weather-summary').text(tempDesc);
 
- 
+
         if (this.temperatureDisplayType === 'average') {
             $(widgetClass + ' .weather-result').text(tempr + '°');
         } else if (this.temperatureDisplayType === 'minMax') {
@@ -85,13 +85,9 @@ define([
         }
     }
 
-    var getWeatherDetail = function () {
-        var measurement = this.temperatureMeasurement === 'celcius' ? 'metric' : 'imperial';
-        var api_url = this.serviceBaseURL + 'data/2.5/weather?q=' + this.city + '&units=' +
-            measurement + '&appid='+ this.apiKey;
-       
+    var getWeatherDetail = function (cityName) {
         $.ajax({
-            url: api_url,
+            url: getURL.call(this),
             method: 'GET',
             success: function (data) {
                 createTodayDisplayTemplate.call(this, data);
@@ -99,23 +95,34 @@ define([
         });
     };
 
-    var buildURL = function () {
+    var getURL = function () {
         //TODO: v2.0 - build the URL for current vs. 5 day.
+        
+        var cityName;
+         if (this._contextObj && this.contextCitySearch) {
+                cityName = this._contextObj.get(this.contextCitySearch);
+            }
+        
+        //if no city was set duringsearch, take the design time value.
+        cityName = typeof cityName !== 'undefined' ? cityName : this.city;
+        var measurement = this.temperatureMeasurement === 'celcius' ? 'metric' : 'imperial';
+        
+        return this.serviceBaseURL + 'data/2.5/weather?q=' + cityName + '&units=' +
+            measurement + '&appid=' + this.apiKey;
     };
     // END *** Private Functions
-    
-    
+
+
     // Declare widget's prototype.
     return declare("OpenWeather.widget.OpenWeather", [_WidgetBase, _TemplatedMixin], {
         // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
 
-        // DOM elements
+        // DOM elements - IGNORE
         inputNodes: null,
         colorSelectNode: null,
         colorInputNode: null,
         infoTextNode: null,
-        searchCity: null,
 
         // Parameters configured in the Modeler.
         city: "",
@@ -126,8 +133,9 @@ define([
         dateFormat: "",
         serviceBaseURL: "",
         apiKey: "",
+        contextCitySearch: "",
         mfToExecute: "",
-        
+
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -149,10 +157,7 @@ define([
             if (this.readOnly || this.get("disabled") || this.readonly) {
                 this._readOnly = true;
             }
-            
-            //call Open Weather API.
-            getWeatherDetail.call(this);
-            
+
             this._updateRendering();
             this._setupEvents();
         },
@@ -160,9 +165,9 @@ define([
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
         update: function (obj, callback) {
             logger.debug(this.id + ".update");
-            
-            console.log('Context Changed: ',this);
-            
+
+            console.log('Context Changed: ', this);
+
             this._contextObj = obj;
             this._resetSubscriptions();
             this._updateRendering(callback); // We're passing the callback to updateRendering to be called after DOM-manipulation
@@ -228,7 +233,6 @@ define([
                     error: function (error) {
                         console.debug(error.description);
                     }
-                    ``
                 }, this);
             }
         },
@@ -236,26 +240,18 @@ define([
         // Rerender the interface.
         _updateRendering: function (callback) {
             logger.debug(this.id + "._updateRendering");
-            //this.colorSelectNode.disabled = this._readOnly;
-            //this.colorInputNode.disabled = this._readOnly;
+            
             console.log('_updateRendering starting ', this.city + ' ' + this.country + ' ' + this.weatherDisplayEnum);
+
+            console.log('search: ', this.contextCitySearch);
+            console.log('context: ', this._contextObj);
+
+            //call Open Weather API - if there is no need for dynamic updates, then call this from the 'postCreate' method.
+            getWeatherDetail.call(this);
 
             dojoStyle.set(this.domNode, "display", "block");
 
-            //if (this._contextObj !== null) {
-            //    dojoStyle.set(this.domNode, "display", "block");
-
-            //var colorValue = this._contextObj.get(this.backgroundColor);
-
-            //this.colorInputNode.value = colorValue;
-            //this.colorSelectNode.value = colorValue;
-
-            //dojoHtml.set(this.infoTextNode, this.messageString);
-            //dojoStyle.set(this.infoTextNode, "background-color", colorValue);
-            //} else {
-            //    dojoStyle.set(this.domNode, "display", "none");
-            //}
-
+            
             // Important to clear all validations!
             this._clearValidations();
 
@@ -268,15 +264,6 @@ define([
             logger.debug(this.id + "._handleValidation");
             this._clearValidations();
 
-            // var validation = validations[0],
-            //     message = validation.getReasonByAttribute(this.backgroundColor);
-
-            // if (this._readOnly) {
-            //     validation.removeAttribute(this.backgroundColor);
-            //  } else if (message) {
-            //      this._addValidation(message);
-            //      validation.removeAttribute(this.backgroundColor);
-            //  }
         },
 
         // Clear validations.
@@ -321,13 +308,13 @@ define([
                     })
                 });
 
-                //this.subscribe({
-                //    guid: this._contextObj.getGuid(),
-                //attr: this.backgroundColor,
-                //callback: lang.hitch(this, function (guid, attr, attrValue) {
-                //        this._updateRendering();
-                //    })
-                //});
+                this.subscribe({
+                    guid: this._contextObj.getGuid(),
+                    attr: this.searchCity,
+                    callback: lang.hitch(this, function (guid, attr, attrValue) {
+                        this._updateRendering();
+                    })
+                });
 
                 this.subscribe({
                     guid: this._contextObj.getGuid(),

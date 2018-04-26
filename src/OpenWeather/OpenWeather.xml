@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="OpenWeather.widget.OpenWeather" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
+<widget id="OpenWeather.widget.OpenWeather" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
     <name>OpenWeather</name>
     <description>Get live weather updates in your application.</description>
 
     <icon />
 
     <properties>
+        
+         
         
         <property key="weatherDisplayType" type="enumeration" defaultValue="singleDay">
             <caption>Render Type</caption>
@@ -50,6 +52,15 @@
             <description>Base URL for the openweathermap.org web service.</description>
         </property>
 
+        <property key="contextCitySearch" type="attribute" required="false">
+            <caption>City Search</caption>
+            <category>Data source</category>
+            <description>Search a city to get the weather</description>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        
         <property key="apiKey" type="string">
             <caption>API Key</caption>
             <category>Data source</category>

@@ -49,7 +49,12 @@ define([
         var iconUrl = "https://openweathermap.org/img/w/" + iconCode + ".png";
         $(widgetClass + ' .weather-icon').html("<img src='" + iconUrl + "'>");
     };
-
+    
+    var generateOutputHTML = function(data){
+        //TODO: Check what display type to generate. today or forecast.
+        createTodayDisplayTemplate.call(this,data);
+        
+    }
     var createTodayDisplayTemplate = function (data) {
         var tempr = Math.round(data.main.temp);
         var location = data.name;
@@ -84,30 +89,35 @@ define([
             $(widgetClass + ' .weather-result').html("<span>" + maxTemp + "</span><span class='temp-min'>" + minTemp + "</span>");
         }
     }
-
+    var createForecastDisplayTemplate = function(data){
+        
+    }
     var getWeatherDetail = function (cityName) {
         $.ajax({
-            url: getURL.call(this),
+            url: buildURL.call(this),
             method: 'GET',
             success: function (data) {
-                createTodayDisplayTemplate.call(this, data);
+                generateOutputHTML.call(this, data);
             }.bind(this)
         });
     };
-
-    var getURL = function () {
+    var buildURL = function () {
         //TODO: v2.0 - build the URL for current vs. 5 day.
-        
         var cityName;
+        var dataType;
+        var measurement;
+        
          if (this._contextObj && this.contextCitySearch) {
                 cityName = this._contextObj.get(this.contextCitySearch);
             }
         
-        //if no city was set duringsearch, take the design time value.
+        //URL variances - city, today/forecast/temp measurement
+        //if no city was set during search, take the design time value.
         cityName = typeof cityName !== 'undefined' ? cityName : this.city;
-        var measurement = this.temperatureMeasurement === 'celcius' ? 'metric' : 'imperial';
+        dataType = this.weatherDisplayType === 'singleDay' ? 'weather' : 'forecast/daily';
+        measurement = this.temperatureMeasurement === 'celcius' ? 'metric' : 'imperial';
         
-        return this.serviceBaseURL + 'data/2.5/weather?q=' + cityName + '&units=' +
+        return this.serviceBaseURL + 'data/2.5/'+ dataType '+?q=' + cityName + '&units=' +
             measurement + '&appid=' + this.apiKey;
     };
     // END *** Private Functions
